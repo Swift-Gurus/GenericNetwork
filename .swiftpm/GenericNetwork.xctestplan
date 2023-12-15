@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "D6C09B30-7C66-4DCA-9034-B234C3AEA744",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "GenericNetwork",
+          "name" : "GenericNetwork"
+        }
+      ]
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "GenericNetworkTests",
+        "name" : "GenericNetworkTests"
+      }
+    }
+  ],
+  "version" : 1
+}
