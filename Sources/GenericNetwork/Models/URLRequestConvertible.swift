@@ -1,7 +1,7 @@
 import Foundation
 
 
-protocol URLRequestConvertible {
+public protocol URLRequestConvertible {
     var id: String { get }
     var baseURL: String { get }
     var path: String? { get }

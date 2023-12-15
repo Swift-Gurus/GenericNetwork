@@ -1,6 +1,6 @@
 import Foundation
 
-enum RequestMethod: String {
+public enum RequestMethod: String {
     case get
     case post
 }
