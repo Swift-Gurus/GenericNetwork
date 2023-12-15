@@ -1,10 +1,3 @@
-//
-//  URLRequestConvertibleTests.swift
-//  
-//
-//  Created by Alex Crowe on 2023-12-15.
-//
-
 import XCTest
 @testable import GenericNetwork
 

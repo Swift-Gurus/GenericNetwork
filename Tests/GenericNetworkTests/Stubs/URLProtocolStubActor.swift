@@ -1,6 +1,4 @@
-
 import Foundation
-
 
 actor URLProtocolStubActor {
     private var requests: [URLRequest] = []
