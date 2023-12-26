@@ -2,7 +2,6 @@ import Foundation
 
 
 public protocol URLRequestConvertible {
-    var id: String { get }
     var baseURL: String { get }
     var path: String? { get }
     var parameters: [String: String] { get }
@@ -13,7 +12,6 @@ public protocol URLRequestConvertible {
     var port: Int? { get }
     var requestTimeout: TimeInterval? { get }
     var assumesHTTP3Capable: Bool { get }
-    var requestType: String? { get }
 }
 
 
