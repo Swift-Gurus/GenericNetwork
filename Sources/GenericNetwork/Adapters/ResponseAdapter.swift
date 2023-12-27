@@ -1,10 +1,3 @@
-//
-//  ResponseAdapter.swift
-//
-//
-//  Created by Alex Crowe on 2023-12-15.
-//
-
 import Foundation
 
 public protocol ResponseAdapter {
@@ -38,8 +31,8 @@ struct GenericResponseAdapter: ResponseAdapter {
 
 
 
-public func DefaultResponseAdapter() -> ResponseAdapter {
-    GenericResponseAdapter(successCodeRange: Array((200...299)))
+public func defaultResponseAdapter() -> ResponseAdapter {
+    GenericResponseAdapter(successCodeRange: Array(200...299))
 }
 
 

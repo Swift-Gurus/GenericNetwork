@@ -12,7 +12,7 @@ public struct GenericNetwork<F: RequestFactory> {
     private let fileMover: FileMover = FileMoverBase()
     public typealias RequestType = F.RequestType
 
-    public init(adapter: ResponseAdapter = DefaultResponseAdapter(),
+    public init(adapter: ResponseAdapter = defaultResponseAdapter(),
                 urlSession: URLSession = .shared,
                 factory: F) {
         self.adapter = adapter
