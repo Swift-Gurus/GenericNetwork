@@ -3,8 +3,6 @@
 //  
 //
 //  Created by Alex Crowe on 2023-12-15.
-//
-
 import Foundation
 
 extension Array {
