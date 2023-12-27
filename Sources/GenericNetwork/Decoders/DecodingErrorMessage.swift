@@ -39,20 +39,10 @@ public struct DecodingErrorMessage: Error, CustomDebugStringConvertible {
        return debugDescription
     }
     
-    init(original: Error) throws {
+    public init(original: Error) throws {
         guard let error = original as? DecodingError else {
             throw original
         }
         self.original = error
     }
 }
-
-
-public extension Error {
-    var decodingErrorOrSelf: Error {
-        get throws { 
-            try DecodingErrorMessage(original: self)
-        }
-    }
-}
-
