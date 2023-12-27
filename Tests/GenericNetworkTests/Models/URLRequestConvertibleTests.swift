@@ -66,25 +66,14 @@ class URLRequestConvertibleTests: XCTestCase {
     }
 
     func test_request_wrong_path_throws_error() throws {
-        var request = MockRequest(baseURL: "")
-        request.path = "//"
-        request.parameters = [:]
-        request.headers = [:]
-        request.scheme = nil
-        request.port = nil
-        request.body = nil
-        XCTAssertThrowsError(try request.urlRequest())
+        var emptyRequest = MockRequest.emptyRequest
+        emptyRequest.path = "//"
+        XCTAssertThrowsError(try emptyRequest.urlRequest())
     }
 
     func test_empty_scheme_doesnt_cause_crash() throws {
-        var request = MockRequest(baseURL: "")
-        request.path = nil
-        request.parameters = [:]
-        request.headers = [:]
-        request.scheme = nil
-        request.port = nil
-        request.body = nil
-        let urlRequest = try request.urlRequest()
+        let emptyRequest = MockRequest.emptyRequest
+        let urlRequest = try emptyRequest.urlRequest()
         XCTAssertEqual(urlRequest.url?.absoluteURL.absoluteString, "")
     }
 }

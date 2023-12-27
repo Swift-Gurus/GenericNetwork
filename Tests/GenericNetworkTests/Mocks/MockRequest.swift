@@ -39,4 +39,15 @@ extension MockRequest {
         "https://www.myApi.com:980/console"
     }
 
+    
+    static var emptyRequest: Self {
+        var request = MockRequest(baseURL: "")
+        request.path = nil
+        request.parameters = [:]
+        request.headers = [:]
+        request.scheme = nil
+        request.port = nil
+        request.body = nil
+        return request
+    }
 }
