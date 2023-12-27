@@ -1,4 +1,5 @@
 import XCTest
+import XCTestToolKit
 @testable import GenericNetwork
 
 struct FactoryMock: RequestFactory {
