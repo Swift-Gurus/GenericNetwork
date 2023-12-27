@@ -1,35 +1,45 @@
-//
-//  JSONDecoderTestCase.swift
-//  
-//
-//  Created by Alex Crowe on 2023-12-27.
-//
-
 import XCTest
+import XCTestToolKit
+@testable import GenericNetwork
 
 final class JSONDecoderTestCase: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+    var sut = JSONDecoder()
+    
+    func test_returns_prettified_error_for_key_not_found() throws {
+        let data = try ["name": "Name"].serializedData
+        XCTAssertThrowsError {
+            let _: MockDecodable = try sut.decode(from: data)
+        } catchBlock: { error in
+            XCTAssertTrue(error is DecodingErrorMessage)
+            XCTAssertEqual("\(error)", DecodingErrorStrings.missingKey("number"))
+        }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func test_returns_prettified_error_for_value_not_found() throws {
+        let data = try ["name": nil].serializedData
+        XCTAssertThrowsError {
+            let _: MockDecodable = try sut.decode(from: data)
+        } catchBlock: { error in
+            XCTAssertTrue(error is DecodingErrorMessage)
+            XCTAssertEqual("\(error)", DecodingErrorStrings.missingValue(["name"]))
         }
     }
+    
+    func test_returns_prettified_error_for_type_mismatch() throws {
+        let data = try ["name": 1].serializedData
+        XCTAssertThrowsError {
+            let _: MockDecodable = try sut.decode(from: data)
+        } catchBlock: { error in
+            XCTAssertTrue(error is DecodingErrorMessage)
+            XCTAssertEqual("\(error)", DecodingErrorStrings.missingType(["name"],
+                                                                        expected: String.self))
+        }
+    }
+}
 
+struct MockDecodable: Decodable {
+    let name: String
+    let number: Int
 }

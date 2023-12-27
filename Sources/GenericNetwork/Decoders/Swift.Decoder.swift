@@ -1,8 +1,13 @@
-//
-//  File.swift
-//  
-//
-//  Created by Alex Crowe on 2023-12-27.
-//
-
 import Foundation
+
+public extension JSONDecoder {
+    func decode<T>(from data: Data) throws -> T where T : Decodable {
+        do {
+           return try decode(T.self, from: data)
+        } catch {
+           throw try DecodingErrorMessage(original: error)
+        }
+        
+    }
+}
+
