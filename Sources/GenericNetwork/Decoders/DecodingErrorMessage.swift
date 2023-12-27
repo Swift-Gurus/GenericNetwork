@@ -15,8 +15,8 @@ struct DecodingErrorStrings {
     }
 }
 
-struct DecodingErrorMessage: Error, CustomDebugStringConvertible {
-    var debugDescription: String {
+public struct DecodingErrorMessage: Error, CustomDebugStringConvertible {
+    public var debugDescription: String {
         switch original {
         case .typeMismatch(let type, let context):
             return  DecodingErrorStrings.missingType(context.codingPath.map({ $0.stringValue }),
@@ -38,6 +38,7 @@ struct DecodingErrorMessage: Error, CustomDebugStringConvertible {
     public var errorDescription: String? {
        return debugDescription
     }
+    
     init(original: Error) throws {
         guard let error = original as? DecodingError else {
             throw original
@@ -47,7 +48,11 @@ struct DecodingErrorMessage: Error, CustomDebugStringConvertible {
 }
 
 
-extension CodingKey {
-   
+public extension Error {
+    var decodingErrorOrSelf: Error {
+        get throws { 
+            try DecodingErrorMessage(original: self)
+        }
+    }
 }
 
