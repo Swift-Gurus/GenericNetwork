@@ -1,4 +1,8 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 
 public protocol ResponseAdapter {
     func response<T: Decodable>(for data: Data, response: URLResponse) throws -> T
