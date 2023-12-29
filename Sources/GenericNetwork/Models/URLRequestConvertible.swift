@@ -31,7 +31,9 @@ extension URLRequestConvertible {
         request.httpMethod = method.rawValue
         request.set(headers: self.headers)
         if #available(iOS 14.5, macOS 11.3, *) {
+            #if !canImport(FoundationNetworking)
             request.assumesHTTP3Capable = assumesHTTP3Capable
+            #endif
         }
         return request
     }

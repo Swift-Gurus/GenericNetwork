@@ -12,7 +12,7 @@ struct RequestDataTask {
     }
     func load<T: Decodable>(request: URLRequestConvertible) async throws -> T {
        let urlRequest = try request.urlRequest()
-       let (data, response) = try await session.data(for: urlRequest)
+       let (data, response) = try await session.data(using: urlRequest)
        return try responseAdapter.response(for: data, response: response)
     }
 }
