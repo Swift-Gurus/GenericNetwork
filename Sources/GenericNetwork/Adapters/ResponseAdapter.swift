@@ -40,12 +40,7 @@ public func defaultResponseAdapter() -> ResponseAdapter {
 }
 
 
-struct GenericResponse<T: Decodable> {
-    let body: T
-}
-
-
-struct GenericNetworkError<T>: Error {
-    let body: T
-    let code: Int
+public struct GenericNetworkError<T>: Error {
+    public let body: T
+    public let code: Int
 }
