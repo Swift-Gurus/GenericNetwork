@@ -18,8 +18,8 @@ public struct URLResponseContainer<T> {
 }
 
 public struct NetworkResponse<T> {
-    let status: Int
-    let body: T
+    public let status: Int
+    public let body: T
 }
 
 
