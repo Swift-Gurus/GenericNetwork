@@ -3,16 +3,20 @@ import Foundation
 import FoundationNetworking
 #endif
 
-struct RequestDataTask {
+struct RequestDataTask: URLRequestTask {
+ 
     private let session: URLSession
-    private let responseAdapter: ResponseAdapter
-    init(session: URLSession, responseAdapter: ResponseAdapter) {
+  
+    init(session: URLSession) {
         self.session = session
-        self.responseAdapter = responseAdapter
     }
+    
+    func perform(using request: URLRequest) async throws -> URLResponseContainer<Data> {
+        let (data, response) = try await session.data(using: request)
+        return .init(response: response, body: data)
+    }
+    
     func load<T: Decodable>(request: URLRequestConvertible) async throws -> T {
-       let urlRequest = try request.urlRequest()
-       let (data, response) = try await session.data(using: urlRequest)
-       return try responseAdapter.response(for: data, response: response)
+       fatalError()
     }
 }

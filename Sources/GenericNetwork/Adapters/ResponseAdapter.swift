@@ -10,32 +10,32 @@ public protocol ResponseAdapter {
     func response(for url: URL, response: URLResponse) throws -> URL
 }
 
-struct GenericResponseAdapter: ResponseAdapter {
-    
+public protocol DataDecoder {
+    associatedtype Object
+    func decode<Object>(data: Data) throws -> Object
+}
+
+public protocol URLContainerValidator {
+    func response<T>(for container: URLResponseContainer<T>) throws -> URLResponseContainer<T>
+}
+
+struct GenericResponseAdapter: URLContainerValidator {
+  
     let successCodeRange: [Int]
-    private let decoder = JSONDecoder()
     
-    func response<T: Decodable>(for data: Data, response: URLResponse) throws -> T {
-        try validate(response: response, for: data)
-        return try decoder.decode(T.self, from: data)
-    }
-    
-    func response(for url: URL, response: URLResponse) throws -> URL {
-        try validate(response: response, for: url)
-        return url
-    }
-    
-    private func validate<T>(response: URLResponse, for data: T) throws {
-        if let httpResponse = response as? HTTPURLResponse,
-           !successCodeRange.isEmpty && !successCodeRange.contains(httpResponse.statusCode) {
-            throw GenericNetworkError(body: data, code: httpResponse.statusCode)
+    func response<T>(for container: URLResponseContainer<T>) throws -> URLResponseContainer<T> {
+        if !successCodeRange.isEmpty && 
+            !successCodeRange.contains(container.response.responseCode) {
+            throw NetworkResponse(status: container.status, body: container.body)
         }
+        
+        return container
     }
 }
 
 
 
-public func defaultResponseAdapter() -> ResponseAdapter {
+public func defaultResponseAdapter() ->  URLContainerValidator {
     GenericResponseAdapter(successCodeRange: Array(200...299))
 }
 
