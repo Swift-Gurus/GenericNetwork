@@ -17,7 +17,6 @@ public protocol URLRequestConvertible {
     var assumesHTTP3Capable: Bool { get }
 }
 
-
 extension URLRequestConvertible {
     /**
      If URLRequestConvertible has an authority component (baseURL or port) and a path component,

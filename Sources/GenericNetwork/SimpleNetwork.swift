@@ -6,7 +6,10 @@ import FoundationNetworking
 public typealias SimpleNetwork = GenericNetwork<PassthroughFactory>
 
 public extension SimpleNetwork {
-    init(configuration: URLSessionConfiguration) {
-        self.init(urlSession: .init(configuration: configuration), factory: .init())
+    init(configuration: URLSessionConfiguration,
+         fileMover: FileMover? = nil) {
+        self.init(urlSession: .init(configuration: configuration),
+                  factory: .init(),
+                  fileMover:  fileMover)
     }
 }

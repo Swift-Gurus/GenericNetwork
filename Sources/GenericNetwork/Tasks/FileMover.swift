@@ -1,6 +1,6 @@
 import Foundation
 
-protocol FileMover {
+public protocol FileMover {
     func move(from src: URL, to dst: URL) throws
 }
 
