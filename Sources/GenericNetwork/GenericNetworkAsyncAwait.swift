@@ -8,7 +8,7 @@ public extension GenericNetwork {
     /// - Parameter type: Request type
     /// - Returns: Decodable
     @available(iOS 14.0, *)
-    func data<T>(for type: F.RequestType) async throws -> URLResponseContainer<T> where T: Decodable {
+    func decodable<T>(for type: F.RequestType) async throws -> URLResponseContainer<T> where T: Decodable {
         try await performTask(for: type) {
             RequestDataTask(session: urlSession)
                 .with(validator: adapter)

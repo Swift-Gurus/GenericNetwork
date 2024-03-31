@@ -50,13 +50,13 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
     func test_returns_decoded_object() async throws {
         let stub = try URLProtocolResponseStub(data: defaultMockDecodableData)
         await addStub(stub)
-        let object: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
+        let object: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         XCTAssertEqual(object.body.name, defaultExpectedDecodable.name)
     }
 
     func test_returns_decoded_object_result_api() async throws {
         try await addDefaultStub()
-        let object: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
+        let object: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         XCTAssertEqual(object.body.name, defaultExpectedDecodable.name)
     }
 
@@ -97,7 +97,7 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
         await addStub(stub)
 
         await XCTAssertThrowsErrorAsync {
-            let _: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
+            let _: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         }
     }
 
@@ -106,7 +106,7 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
         await addStub(stub)
 
         await XCTAssertThrowsErrorAsync {
-            let _: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
+            let _: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         } catchBlock: { error in
             XCTAssertEqual(error.getNetworkError(), self.expectedError(with: self.notFoundCode))
         }

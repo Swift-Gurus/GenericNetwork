@@ -5,7 +5,7 @@ public extension GenericNetwork {
     /// - Parameters:
     ///   - type: RequestType
     ///   - completion: NetworkResultCompletion<Decodable>
-    func data<T>(for type: F.RequestType, completion: @escaping NetworkResultCompletion<T>) where T: Decodable {
+    func decodable<T>(for type: F.RequestType, completion: @escaping NetworkResultCompletion<T>) where T: Decodable {
         performResultTask(for: type,
                           taskBuilder: {
                                 RequestDataTask(session: urlSession)
