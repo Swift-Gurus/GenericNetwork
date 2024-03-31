@@ -1,12 +1,8 @@
 import Foundation
+import FunctionalSwift
 
-protocol URLRequestTask {
+protocol URLRequestTaskAsync {
     associatedtype Body
     func perform(using: URLRequest) async throws -> URLResponseContainer<Body>
-}
-
-extension URLRequestTask {
-    func with(validator: URLContainerValidator) -> RequestTask<Self> {
-        .init(wrapped: self, validator: validator)
-    }
+    func perform(using: URLRequest, completion: @escaping ResultClosure<URLResponseContainer<Body>>)
 }

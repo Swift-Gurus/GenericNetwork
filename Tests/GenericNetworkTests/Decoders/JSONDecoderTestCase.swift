@@ -1,11 +1,10 @@
+@testable import GenericNetwork
 import XCTest
 import XCTestToolKit
-@testable import GenericNetwork
 
 final class JSONDecoderTestCase: XCTestCase {
+    private var sut = JSONDecoder()
 
-    var sut = JSONDecoder()
-    
     func test_returns_prettified_error_for_key_not_found() throws {
         let data = try ["name": "Name"].serializedData
         XCTAssertThrowsError {
@@ -14,9 +13,8 @@ final class JSONDecoderTestCase: XCTestCase {
             XCTAssertTrue(error is DecodingErrorMessage)
             XCTAssertEqual("\(error)", DecodingErrorStrings.missingKey("number"))
         }
-
     }
-    
+
     func test_returns_prettified_error_for_value_not_found() throws {
         let data = try ["name": nil].serializedData
         XCTAssertThrowsError {
@@ -26,7 +24,7 @@ final class JSONDecoderTestCase: XCTestCase {
             XCTAssertEqual("\(error)", DecodingErrorStrings.missingValue(["name"]))
         }
     }
-    
+
     func test_returns_prettified_error_for_type_mismatch() throws {
         let data = try ["name": 1].serializedData
         XCTAssertThrowsError {
@@ -37,9 +35,4 @@ final class JSONDecoderTestCase: XCTestCase {
                                                                         expected: String.self))
         }
     }
-}
-
-struct MockDecodable: Decodable {
-    let name: String
-    let number: Int
 }

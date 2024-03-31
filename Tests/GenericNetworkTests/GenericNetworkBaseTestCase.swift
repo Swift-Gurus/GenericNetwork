@@ -3,100 +3,120 @@ import Foundation
 import FoundationNetworking
 #endif
 
+@testable import GenericNetwork
 import XCTest
 import XCTestToolKit
-@testable import GenericNetwork
 
-class GenericNetworkBaseTestCase<F: RequestFactory>: XCTestCase {
+class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
+    let notFoundCode = 400
+
     var fileMoverMock = FileMoverMock()
-    var successCode: [Int] = [200]
-    var sessionConfiguration: URLSessionConfiguration = .default
-    var fakeRequestType: F.RequestType { fatalError() }
-    var mockSession: URLSession { URLSession(configuration: sessionConfiguration) }
+    var fakeRequestType: F.RequestType { fatalError("Subclasses must implement") }
     var destination: URL { FileManager.default.temporaryDirectory }
-    func expectedError(with code: Int) -> NetworkResponse<Data> {  .init(status: code, body: .init()) }
-    
+
     var factory: F {
-        fatalError()
+        fatalError("Subclasses must implement")
     }
-    
+
     var sut: GenericNetwork<F> {
-        .init(urlSession: mockSession,
-              factory: factory,
+        .init(factory: factory,
+              urlSession: mockSession,
               fileMover: fileMoverMock)
     }
-    
+
+    var defaultMockDecodableData: Data {
+        get throws {
+           try [
+                "name": "Name",
+                "number": 100
+           ].serializedData
+        }
+    }
+
+    var defaultExpectedDecodable: MockDecodable { .init(name: "Name", number: 100) }
+
     override func setUp() async throws {
+        try await super.setUp()
         await URLProtocolStubBase.clear()
         sessionConfiguration = .default
         sessionConfiguration.protocolClasses = [URLProtocolStubBase.self]
         fileMoverMock = .init()
     }
-    
+
     override func tearDown() async throws {
         await URLProtocolStubBase.clear()
     }
-    
+
     func test_returns_decoded_object() async throws {
-        let stub = try URLProtocolResponseStub(data: ["name": "name"].serializedData)
+        let stub = try URLProtocolResponseStub(data: defaultMockDecodableData)
         await addStub(stub)
-        let object: NetworkResponse<ExpectedStruct> = try await sut.data(for: fakeRequestType)
-        XCTAssertEqual(object.body.name, "name")
+        let object: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
+        XCTAssertEqual(object.body.name, defaultExpectedDecodable.name)
     }
-    
+
+    func test_returns_decoded_object_result_api() async throws {
+        try await addDefaultStub()
+        let object: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
+        XCTAssertEqual(object.body.name, defaultExpectedDecodable.name)
+    }
+
     func test_downloads_file_and_ask_the_mover() async throws {
-        let stub = try URLProtocolResponseStub(data: ["name": "name"].serializedData)
-        await addStub(stub)
-        let urlResponse: NetworkResponse<URL> = try await sut.download(for: fakeRequestType,
-                                                                       destination: destination)
+        try await addDefaultStub()
+        let urlResponse: URLResponseContainer<URL> = try await sut.download(for: fakeRequestType,
+                                                                            destination: destination)
         XCTAssertEqual(urlResponse.body, destination)
+        XCTAssertEqual(fileMoverMock.destinations, [destination])
     }
-    
-    func test_throws_error_if_serialization_fails() async throws  {
+
+    func test_downloads_file_and_ask_the_mover_result_api() async throws {
+        try await addDefaultStub()
+        let response = try await sut.downloadUsingResultApi(for: fakeRequestType, destination: destination)
+
+        XCTAssertEqual(response.body, destination)
+        XCTAssertEqual(fileMoverMock.destinations, [destination])
+    }
+
+    func test_download_fails_if_mover_fails_result_api() async throws {
+        try await addDefaultStub()
+        fileMoverMock.expectedError = DefaultMockError()
+        await XCTAssertThrowsErrorAsync {
+            _ = try await sut.downloadUsingResultApi(for: fakeRequestType, destination: destination)
+        }
+    }
+
+    func test_download_fails_if_mover_fails() async throws {
+        try await addDefaultStub()
+        fileMoverMock.expectedError = DefaultMockError()
+        await XCTAssertThrowsErrorAsync {
+            _ = try await sut.download(for: fakeRequestType, destination: destination)
+        }
+    }
+
+    func test_throws_error_if_serialization_fails() async throws {
         let stub = URLProtocolResponseStub(data: Data())
         await addStub(stub)
-        
+
         await XCTAssertThrowsErrorAsync {
-            let _: NetworkResponse<ExpectedStruct> = try await sut.data(for: fakeRequestType)
+            let _: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
         }
-       
     }
-    
-    
+
     func test_throws_error_if_not_success_code() async throws {
-        let stub = URLProtocolResponseStub(data: Data(), status: 400)
+        let stub = URLProtocolResponseStub(data: Data(), status: notFoundCode)
         await addStub(stub)
-        
+
         await XCTAssertThrowsErrorAsync {
-            let _: NetworkResponse<ExpectedStruct> = try await sut.data(for: fakeRequestType)
+            let _: URLResponseContainer<MockDecodable> = try await sut.data(for: fakeRequestType)
         } catchBlock: { error in
-            XCTAssertEqual(error.getNetworkError(), self.expectedError(with: 400))
+            XCTAssertEqual(error.getNetworkError(), self.expectedError(with: self.notFoundCode))
         }
     }
-    
-}
 
-extension GenericNetworkBaseTestCase {
-    func addStub(_ stub: URLProtocolResponseStub) async {
-        await URLProtocolStubBase.addExpectedStub(stub)
+    private func expectedError(with code: Int) -> GenericNetworkError<Data> {
+        .serverError(NetworkResponse<Data>(status: code, body: .init()))
     }
-}
 
-
-extension NetworkResponse: Equatable where T: Equatable {
-    public static func == (lhs: NetworkResponse, rhs: NetworkResponse) -> Bool {
-        lhs.body == rhs.body && lhs.status == rhs.status
+    private func addDefaultStub() async throws {
+        try await addStub(URLProtocolResponseStub(data: defaultMockDecodableData))
     }
-}
-
-extension Error {
-    func getNetworkError<T: Decodable>() -> NetworkResponse<T>? {
-        self as? NetworkResponse<T>
-    }
-}
-
-
-
-private struct ExpectedStruct: Decodable {
-    let name: String
 }

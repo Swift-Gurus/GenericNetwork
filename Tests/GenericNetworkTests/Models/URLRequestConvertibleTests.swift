@@ -1,16 +1,16 @@
-import XCTest
 @testable import GenericNetwork
+import XCTest
 
 class URLRequestConvertibleTests: XCTestCase {
-    var request: MockRequest {
+    private var request: MockRequest {
         .init()
     }
 
-    var expectedCustomURLString: String {
+    private var expectedCustomURLString: String {
         MockRequest.expectedURLString
     }
 
-    var expectedBaseURLString: String {
+    private var expectedBaseURLString: String {
         MockRequest.expectedFullBaseURLString
     }
 

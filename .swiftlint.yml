@@ -1,0 +1,60 @@
+disabled_rules:
+  - generic_type_name
+  - identifier_name
+  - blanket_disable_command
+  - explicit_acl
+  - explicit_type_interface
+  - no_extension_access_modifier
+  - prefixed_toplevel_constant
+  - explicit_top_level_acl
+  - file_name
+  - multiline_arguments_brackets
+  - multiline_parameters_brackets
+  - required_deinit
+  - indentation_width
+  - lower_acl_than_parent
+  - private_unit_test
+  - explicit_enum_raw_value
+opt_in_rules:
+  - all
+analyzer_rules:
+  - explicit_self
+  - unused_import
+  - unused_declaration
+nesting:
+  warning: 1
+  error: 2
+closure_body_length:
+  - 5 #warning
+  - 10 #warning
+force_cast: error # implicitly
+force_try:
+  severity: error # explicitly
+force_unwrapping: error
+
+line_length: 150
+
+type_body_length:
+  - 50 # warning
+  - 150 # error
+# or they can set both explicitly
+file_length:
+  warning: 300
+  error: 400
+
+type_name:
+  min_length: 4 # only warning
+  max_length: # warning and error
+    warning: 40
+    error: 50
+  excluded: iPhone # excluded via string
+
+reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji, sonarqube, markdow
+
+excluded:
+  - ${PWD}/Pods
+  - ${PWD}/DerivedData
+  - ${PWD}/.build
+  - ${PWD}/VoodooAdn/Tests
+  - ${PWD}/VoodooAdn/SourceCode/Legacy
+  - ${PWD}/Packages/*/*/Tests

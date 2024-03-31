@@ -1,22 +1,35 @@
 import Foundation
+import FunctionalSwift
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
 
-struct RequestTask<Wrapped: URLRequestTask>: NetworkTask {
-
+struct RequestTask<Wrapped: URLRequestTaskAsync>: NetworkTaskAsync {
     private let wrapped: Wrapped
-    private let validator: URLContainerValidator
-    init(wrapped: Wrapped,
-         validator: URLContainerValidator) {
+
+    init(wrapped: Wrapped) {
         self.wrapped = wrapped
-        self.validator = validator
     }
-    
-    func perform(using request: URLRequestConvertible) async throws -> NetworkResponse<Wrapped.Body> {
+
+    func perform(using request: URLRequestConvertible) async throws -> URLResponseContainer<Wrapped.Body> {
         let urlRequest = try request.urlRequest()
-        let responseContainer = try await wrapped.perform(using: urlRequest)
-        let validatedResponseContainer = try validator.response(for: responseContainer)
-        return .init(status: validatedResponseContainer.status, body: validatedResponseContainer.body)
+        return try await wrapped.perform(using: urlRequest)
+    }
+
+    func perform(using request: URLRequestConvertible, completion: @escaping ResultClosure<URLResponseContainer<Wrapped.Body>>) {
+        do {
+            let urlRequest = try request.urlRequest()
+            wrapped.perform(using: urlRequest) {result in
+                result.sink(completion)
+            }
+        } catch {
+            completion(.failure(error))
+        }
+    }
+}
+
+extension URLRequestTaskAsync {
+    var requestTask: RequestTask<Self> {
+        .init(wrapped: self)
     }
 }
