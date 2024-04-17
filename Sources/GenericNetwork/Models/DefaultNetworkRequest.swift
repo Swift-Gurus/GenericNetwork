@@ -20,4 +20,8 @@ public struct DefaultNetworkRequest: URLRequestConvertible {
     public var requestTimeout: TimeInterval?
 
     public var assumesHTTP3Capable = false
+
+    public init(baseURL: String) {
+        self.baseURL = baseURL
+    }
 }
