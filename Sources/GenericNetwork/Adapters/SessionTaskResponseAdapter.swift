@@ -1,6 +1,6 @@
 import Foundation
 
-enum GenericNetworkError<T>: Error {
+public enum GenericNetworkError<T>: Error {
     case noResponseNorData
     case serverError(NetworkResponse<T>)
     case system(error: Error)
@@ -26,7 +26,7 @@ class GenericResponseAdapter<T> {
 }
 
 extension GenericNetworkError: Equatable where T: Equatable {
-    static func == (lhs: GenericNetworkError<T>, rhs: GenericNetworkError<T>) -> Bool {
+    public static func == (lhs: GenericNetworkError<T>, rhs: GenericNetworkError<T>) -> Bool {
         switch (lhs, rhs) {
         case let (.system(ler), .system(rer)):
             return ler.localizedDescription == rer.localizedDescription
