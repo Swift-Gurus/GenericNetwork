@@ -15,13 +15,11 @@ let package = Package(
     dependencies: [
        .package(url: "https://github.com/Swift-Gurus/XCTestToolKit.git", branch: "main"),
        .package(url: "https://github.com/Swift-Gurus/FunctionalSwift", branch: "master"),
-       .package(url: "https://github.com/realm/SwiftLint.git", from: .init(0, 5, 0))
     ],
     targets: [
         .target(
             name: "GenericNetwork",
-            dependencies: [ .product(name: "FunctionalSwift", package: "FunctionalSwift")],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]
+            dependencies: [ .product(name: "FunctionalSwift", package: "FunctionalSwift")]
         ),
         .testTarget(
             name: "GenericNetworkTests",
