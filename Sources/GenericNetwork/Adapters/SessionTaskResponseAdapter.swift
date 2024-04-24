@@ -1,5 +1,7 @@
 import Foundation
-
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 public enum GenericNetworkError<T>: Error {
     case noResponseNorData
     case serverError(NetworkResponse<T>)
