@@ -1,5 +1,8 @@
 import Foundation
 import FunctionalSwift
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 struct DecodableURLRequestTask<Wrapped: URLRequestTaskAsync, Object: Decodable>: URLRequestTaskAsync where Wrapped.Body == Data {
     typealias Body = Object

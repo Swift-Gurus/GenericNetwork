@@ -1,5 +1,8 @@
 import Foundation
 import FunctionalSwift
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 struct URLRequestTaskWithValidation<Wrapped: URLRequestTaskAsync>: URLRequestTaskAsync {
     typealias Body = Wrapped.Body
