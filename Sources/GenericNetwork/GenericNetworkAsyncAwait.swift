@@ -15,6 +15,19 @@ public extension GenericNetwork {
                 .with(decoder: decoder, type: T.self)
         }
     }
+    
+    /// Returns Data
+    /// - Parameter type: Request type
+    /// - Returns: Data
+    /// performs validation of the response
+    @available(iOS 14.0, *)
+    func data(for type: F.RequestType) async throws -> URLResponseContainer<Data> {
+        try await performTask(for: type) {
+            RequestDataTask(session: urlSession)
+                .with(validator: adapter)
+        }
+    }
+    
 
     /// Download data
     /// - Parameters:
