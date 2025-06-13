@@ -21,17 +21,10 @@ struct DecodableURLRequestTask<Wrapped: URLRequestTaskAsync, Object: Decodable>:
         let obj = try decoder.decode(Body.self, from: responseContainer.body)
         return .init(response: responseContainer.response, body: obj)
     }
-
-    func perform(using request: URLRequest, completion: @escaping ResultClosure<URLResponseContainer<Object>>) {
-        wrapped.perform(using: request) {  [decoder] response in
-            response.tryMap { value in .init(response: value.response, body: try decoder.decode(Body.self, from: value.body)) }
-                    .sink(completion)
-        }
-    }
 }
 
 extension URLRequestTaskAsync {
-    func with<T: Decodable>(decoder: JSONDecoder, type: T.Type) -> DecodableURLRequestTask<Self, T> {
+    func with<T: Decodable>(decoder: JSONDecoder, type _: T.Type) -> DecodableURLRequestTask<Self, T> {
         .init(wrapped: self, decoder: decoder)
     }
 }
