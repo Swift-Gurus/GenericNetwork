@@ -22,7 +22,7 @@ extension URLSession {
                                 downloadError: error,
                                 original: request)
                 .map { ($0.body, $0.response ) }
-                .sink(continuation.resume)
+                .sink { continuation.resume(with: $0) }
             }
             .resume()
         }
@@ -42,7 +42,7 @@ extension URLSession {
                 .map { ($0.body, $0.response) }
                 .doTry { try mover.move(from: $0.0, to: destination) }
                 .map { (destination, $0.1) }
-                .sink(continuation.resume)
+                .sink { continuation.resume(with: $0) }
             }
             .resume()
         }

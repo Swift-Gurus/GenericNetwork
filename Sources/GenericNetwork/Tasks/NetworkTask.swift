@@ -7,6 +7,4 @@ import FoundationNetworking
 protocol NetworkTaskAsync {
     associatedtype Body
     func perform(using: URLRequestConvertible) async throws -> URLResponseContainer<Body>
-
-    func perform(using: URLRequestConvertible, completion: @escaping ResultClosure<URLResponseContainer<Body>>)
 }

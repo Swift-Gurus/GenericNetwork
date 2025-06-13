@@ -21,13 +21,6 @@ struct URLRequestTaskWithValidation<Wrapped: URLRequestTaskAsync>: URLRequestTas
         let responseContainer = try await wrapped.perform(using: urlRequest)
         return try validator.response(for: responseContainer)
     }
-
-    func perform(using urlRequest: URLRequest, completion: @escaping ResultClosure<URLResponseContainer<Wrapped.Body>>) {
-        wrapped.perform(using: urlRequest) {[validator] result in
-            result.tryMap { try validator.response(for: $0 ) }
-                .sink(completion)
-        }
-    }
 }
 
 extension URLRequestTaskAsync {

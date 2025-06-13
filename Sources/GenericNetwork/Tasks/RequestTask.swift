@@ -15,17 +15,6 @@ struct RequestTask<Wrapped: URLRequestTaskAsync>: NetworkTaskAsync {
         let urlRequest = try request.urlRequest()
         return try await wrapped.perform(using: urlRequest)
     }
-
-    func perform(using request: URLRequestConvertible, completion: @escaping ResultClosure<URLResponseContainer<Wrapped.Body>>) {
-        do {
-            let urlRequest = try request.urlRequest()
-            wrapped.perform(using: urlRequest) {result in
-                result.sink(completion)
-            }
-        } catch {
-            completion(.failure(error))
-        }
-    }
 }
 
 extension URLRequestTaskAsync {

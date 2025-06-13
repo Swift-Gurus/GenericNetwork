@@ -35,57 +35,31 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
 
     var defaultExpectedDecodable: MockDecodable { .init(name: "Name", number: 100) }
 
-    override func setUp() async throws {
-        try await super.setUp()
-        await URLProtocolStubBase.clear()
-        sessionConfiguration = .default
-        sessionConfiguration.protocolClasses = [URLProtocolStubBase.self]
-        fileMoverMock = .init()
-    }
-
-    override func tearDown() async throws {
-        await URLProtocolStubBase.clear()
-    }
-
     func test_returns_decoded_object() async throws {
         let stub = try URLProtocolResponseStub(data: defaultMockDecodableData)
-        await addStub(stub)
+        addStubs([stub])
+        setObserveRequests(1)
         let object: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         XCTAssertEqual(object.body.name, defaultExpectedDecodable.name)
+        _ = try await allRequests
     }
 
     func test_returns_decoded_object_result_api() async throws {
-        try await addDefaultStub()
+        try addDefaultStub()
         let object: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         XCTAssertEqual(object.body.name, defaultExpectedDecodable.name)
     }
 
     func test_downloads_file_and_ask_the_mover() async throws {
-        try await addDefaultStub()
+        try addDefaultStub()
         let urlResponse: URLResponseContainer<URL> = try await sut.download(for: fakeRequestType,
                                                                             destination: destination)
         XCTAssertEqual(urlResponse.body, destination)
         XCTAssertEqual(fileMoverMock.destinations, [destination])
     }
 
-    func test_downloads_file_and_ask_the_mover_result_api() async throws {
-        try await addDefaultStub()
-        let response = try await sut.downloadUsingResultApi(for: fakeRequestType, destination: destination)
-
-        XCTAssertEqual(response.body, destination)
-        XCTAssertEqual(fileMoverMock.destinations, [destination])
-    }
-
-    func test_download_fails_if_mover_fails_result_api() async throws {
-        try await addDefaultStub()
-        fileMoverMock.expectedError = DefaultMockError()
-        await XCTAssertThrowsErrorAsync {
-            _ = try await sut.downloadUsingResultApi(for: fakeRequestType, destination: destination)
-        }
-    }
-
     func test_download_fails_if_mover_fails() async throws {
-        try await addDefaultStub()
+        try addDefaultStub()
         fileMoverMock.expectedError = DefaultMockError()
         await XCTAssertThrowsErrorAsync {
             _ = try await sut.download(for: fakeRequestType, destination: destination)
@@ -94,7 +68,7 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
 
     func test_throws_error_if_serialization_fails() async throws {
         let stub = URLProtocolResponseStub(data: Data())
-        await addStub(stub)
+        addStubs([stub])
 
         await XCTAssertThrowsErrorAsync {
             let _: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
@@ -103,8 +77,7 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
 
     func test_throws_error_if_not_success_code() async throws {
         let stub = URLProtocolResponseStub(data: Data(), status: notFoundCode)
-        await addStub(stub)
-
+        addStubs([stub])
         await XCTAssertThrowsErrorAsync {
             let _: URLResponseContainer<MockDecodable> = try await sut.decodable(for: fakeRequestType)
         } catchBlock: { error in
@@ -116,7 +89,15 @@ class GenericNetworkBaseTestCase<F: RequestFactory>: NetworkBaseTestsCase {
         .serverError(NetworkResponse<Data>(status: code, body: .init()))
     }
 
-    private func addDefaultStub() async throws {
-        try await addStub(URLProtocolResponseStub(data: defaultMockDecodableData))
+    private func addDefaultStub() throws {
+        try addStubs([.init(data: defaultMockDecodableData)])
     }
+}
+
+extension Never: RequestFactory {
+    public func request(for _: String) throws -> any URLRequestConvertible {
+        MockRequest()
+    }
+
+    public typealias RequestType = String
 }

@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "functionalswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Swift-Gurus/FunctionalSwift",
+      "state" : {
+        "branch" : "master",
+        "revision" : "a996371f46bfca893542fa897d0e9c700302f7c6"
+      }
+    },
+    {
+      "identity" : "xctesttoolkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Swift-Gurus/XCTestToolKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0a3bd8a99a31b606bd76de3ee6951325828b18b2"
+      }
+    }
+  ],
+  "version" : 2
+}
